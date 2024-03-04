@@ -1,6 +1,7 @@
 package pools_test
 
 import (
+	"math/rand"
 	"sync"
 	"testing"
 	"time"
@@ -117,6 +118,50 @@ func Test_ResourcePool(t *testing.T) {
 		for i := 0; i < len; i++ {
 			require.True(t, items[i].Update)
 		}
+	})
+
+
+}
+
+func Test_ResourcePool_Deadlocks(t *testing.T) {
+	t.Run("Larger pool size test nr2.", func(t *testing.T) {
+		amount := 10
+		items := make([]*TestItem, 0, amount)
+
+		for i := 0; i < amount; i++ {
+			items = append(items, &TestItem{
+				ID: i,
+				Update: false,
+			})
+		}
+
+		pool := pools.NewResourcePool(items, amount)
+
+		wait := sync.WaitGroup{}
+		wait.Add(100)
+
+		seed := 123456789
+
+		// 1000 go routines, access a random item from the pool, sleep and update it
+		// This should not cause any deadlocks
+		for i := 0; i < 100; i++ {
+			go func(index int) {
+				defer wait.Done()
+				cs := seed * index
+				cs = cs ^ seed
+				rnd := rand.New(rand.NewSource(int64(cs)))
+
+				for j := 0; j < amount; j++ {
+					index := rnd.Uint64() % uint64(amount)
+					item, returnFn := pool.Loan(index)
+					item.Update = true
+					time.Sleep(100 * time.Millisecond)
+					returnFn(item)
+				}
+			}(i)
+		}
+
+		wait.Wait()
 	})
 }
 
