@@ -39,7 +39,7 @@ func Test_ResourcePool(t *testing.T) {
 
 		pool := pools.NewResourcePool([]*TestItem{original}, 10)
 
-		item, returnFn := pool.LoanForString("dir/file.txt")
+		item, returnFn := pool.LoanByString("dir/file.txt")
 		item.Update = true
 		returnFn(item)
 
@@ -208,7 +208,7 @@ func Fuzz_ResourcePool_KeyBytes(f *testing.F) {
 
 		pool := pools.NewResourcePool([]*TestItem{original}, 10)
 
-		item, returnFn := pool.LoanForBytes(key)
+		item, returnFn := pool.LoanByBytes(key)
 		item.Update = true
 		returnFn(item)
 
@@ -225,7 +225,7 @@ func Fuzz_ResourcePool_KeyUint64(f *testing.F) {
 
 		pool := pools.NewResourcePool([]*TestItem{original}, 10)
 
-		item, returnFn := pool.LoanForUint64(key)
+		item, returnFn := pool.LoanByUint64(key)
 		item.Update = true
 		returnFn(item)
 

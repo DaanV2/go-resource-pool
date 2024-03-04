@@ -49,25 +49,25 @@ func (pool *ResourcePool[T]) Len() int {
 	return len(pool.items)
 }
 
-// LoanForUint64 returns a resource from the pool and a function that should be called to return the resource to the pool.
+// LoanByUint64 returns a resource from the pool and a function that should be called to return the resource to the pool.
 // It uses a uint64 key to get the resource from the pool. This is useful for resources that are identified by a number id.
-func (pool *ResourcePool[T]) LoanForUint64(key uint64) (*T, ReturnLoan[T]) {
+func (pool *ResourcePool[T]) LoanByUint64(key uint64) (*T, ReturnLoan[T]) {
 	index := pool.getIndex(key)
 
 	return pool.Loan(index)
 }
 
-// LoanForString returns a resource from the pool and a function that should be called to return the resource to the pool.
+// LoanByString returns a resource from the pool and a function that should be called to return the resource to the pool.
 // It uses a string key to get the resource from the pool. This is useful for files, or other resources that are identified by a string.
-func (pool *ResourcePool[T]) LoanForString(key string) (*T, ReturnLoan[T]) {
+func (pool *ResourcePool[T]) LoanByString(key string) (*T, ReturnLoan[T]) {
 	v := locks.KeyForString(key)
 	index := pool.getIndex(v)
 
 	return pool.Loan(index)
 }
 
-// LoanForString returns a resource from the pool and a function that should be called to return the resource to the pool.
-func (pool *ResourcePool[T]) LoanForBytes(key []byte) (*T, ReturnLoan[T]) {
+// LoanByString returns a resource from the pool and a function that should be called to return the resource to the pool.
+func (pool *ResourcePool[T]) LoanByBytes(key []byte) (*T, ReturnLoan[T]) {
 	v := locks.KeyForBytes(key)
 	index := pool.getIndex(v)
 
